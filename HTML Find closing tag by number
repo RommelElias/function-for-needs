@@ -1,0 +1,27 @@
+<?php
+function findClosingElementsByCount($html, $num, $tagname) {   //$html CODE , $num position number , $tagname tag you want to remove 
+    $flag = 1;
+    $j = 0;
+    $tagcount = substr_count($html, $tagname);   //counts tagname in html code
+
+    if ($num >= $tagcount) {
+        return $pos = strlen($html) - 1;
+    } else {
+        $pos = strpos($html, $tagname);
+        $j++;
+
+        while ($flag) {
+            if ($j <= $num) {
+                $pos = strpos($html, $tagname, $pos + strlen($tagname));
+                $j++;
+            } else {
+                $flag = 0;
+            }
+        }
+        if ($pos === FALSE) {
+            return $pos = strlen($html) - 1;
+        }
+        return $pos + strlen($tagname);   //position $num in $html CODE
+    }
+}
+?>
