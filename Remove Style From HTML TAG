@@ -1,0 +1,61 @@
+<?php
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "tbl_db";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+$conn->set_charset("utf8");
+$sql = "SELECT * FROM tbl_db where id=39";
+$result = $conn->query($sql);
+//$internalErrors = libxml_use_internal_errors(true);
+$count=0;
+
+if ($result->num_rows > 0) {
+    // output data of each row
+    while ($row = $result->fetch_assoc()) { // load data row from tbl_db
+        $id = $row['id'];
+        
+
+        $body = new DOMDocument();  // create dom document
+        $body->loadHTML(mb_convert_encoding($row["body"], 'HTML-ENTITIES', 'UTF-8')
+                , LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+        );
+        if(libxml_use_internal_errors()==false){
+        $count++;}
+        echo "" . $row["body"] . "<br>";
+        $xpath = new DOMXPath($body);
+        $nodes = $xpath->query('//*[@style|@dir]'); // regex: the style you want to remove 
+
+
+        foreach ($nodes as $node) {
+//            $node->removeAttribute('style');  //remove style
+            $node->removeAttribute('dir');   // remove dir , YOU CHOOSE
+        }
+        echo $body->saveHTML(); // save HTML
+        $body_no_styles = $body->saveHTML();  // variable for body with no style you wanted to remove
+//        echo $body->saveHTML();
+//        echo $body_no_styles;
+        var_dump($body_no_styles); // check if everything working well
+        echo $count;
+        
+//        $sql1 = "UPDATE tbl_db SET body=N'" . $body_no_styles . "' where id=" . $row['id'];  //update date base if your data is loaded from there
+//        var_dump($sql1);
+//        $r = $conn->query($sql1);
+//        var_dump($r);
+
+
+
+//            echo "without style " . $row["body"] . "<br>";
+    }
+} else {
+    echo "0 results";
+}
+$conn->close();
+?>
